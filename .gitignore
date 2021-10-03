@@ -6,3 +6,9 @@ env/
 
 # Vscode settings
 settings.json
+
+# Databses
+.dbdata
+
+# DS_Store
+.DS_Store
