@@ -1,6 +1,6 @@
 from django.urls import path
 
-from .views import ProductViewSet
+from .views import ProductViewSet, UserAPIView
 
 urlpatterns = [
     path(
@@ -22,4 +22,5 @@ urlpatterns = [
             }
         ),
     ),
+    path("user", UserAPIView.as_view()),
 ]
