@@ -1,0 +1,24 @@
+version: '3.8' # the latest version of docker-compose
+services:
+    backend:
+        build:
+            context: .
+            dockerfile: Dockerfile
+        ports:
+            - 8001:5000 # localhost port:dockerfile port -> This will allow to access to server
+        volumes:
+            - .:/app # sync all files from localhost to /app in server. If any changes happened in either in localhost or server, it will reflect all changes to both side.
+        depends_on:
+            - db # db service run first then backend service run after db service.
+    db:
+        image: mysql:8.0.26
+        restart: always # sometimes mysql stops and this also stops docker container so our app will not run. So restart: always is required.
+        environment:
+            MYSQL_DATABASE: main
+            # MYSQL_USER: root # MYSQL_USER should be removed since the root user gets created automatically on mysql
+            MYSQL_PASSWORD: root
+            MYSQL_ROOT_PASSWORD: root
+        volumes:
+            - .dbdata:/var/lib/mysql # .dbdata in local will map to server's /var/lib/mysql. So all the files in /var/lib/mysql will be reflected to the local's .dbdata folder.
+        ports:
+            - 33067:3306
