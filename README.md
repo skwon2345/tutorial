@@ -9,3 +9,7 @@ $ docker-compose up db
 ```bash
 $ docker-compose up
 ```
+If you want to open `backend` shell, please execute the following command after `docker-compose up db` and `docker-compose up`
+```bash
+$ docker-compose exec backend sh
+```
