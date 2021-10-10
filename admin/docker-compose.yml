@@ -4,12 +4,22 @@ services:
         build:
             context: .
             dockerfile: Dockerfile
+        command: "python3 manage.py runserver 0.0.0.0:8000"
         ports:
             - 8000:8000 # localhost port:dockerfile port -> This will allow to access to server
         volumes:
             - .:/app # sync all files from localhost to /app in server. If any changes happened in either in localhost or server, it will reflect all changes to both side.
         depends_on:
             - db # db service run first then backend service run after db service.
+
+    queue:
+        build:
+            context: .
+            dockerfile: Dockerfile
+        command: "python3 consumer.py"
+        depends_on:
+            - db
+
     db:
         image: mysql:8.0.26
         restart: always # sometimes mysql stops and this also stops docker container so our app will not run. So restart: always is required.
