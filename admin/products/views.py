@@ -13,13 +13,13 @@ class ProductViewSet(viewsets.ViewSet):
     def list(self, request):  # /api/products
         products = Product.objects.all()
         serializer = ProductSerializer(products, many=True)
-        publish()
         return Response(serializer.data)
 
     def create(self, request):  # /api/products
         serializer = ProductSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         serializer.save()
+        publish("product_created", serializer.data)
 
         return Response(serializer.data, status=status.HTTP_201_CREATED)
 
@@ -36,12 +36,14 @@ class ProductViewSet(viewsets.ViewSet):
         )  # instance is the product in db, and data is user want to update.
         serializer.is_valid(raise_exception=True)
         serializer.save()
+        publish("product_updated", serializer.data)
 
         return Response(serializer.data, status=status.HTTP_202_ACCEPTED)
 
     def destroy(self, request, pk=None):  # /api/products/<str:id>
         product = Product.objects.get(id=pk)
         product.delete()
+        publish("product_deleted", pk)
 
         return Response(status=status.HTTP_204_NO_CONTENT)
 
