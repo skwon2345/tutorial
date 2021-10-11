@@ -33,7 +33,7 @@ def callback(ch, method, properties, body):
         product.title = data["title"]
         product.image = data["image"]
 
-        db.session.commmit()
+        db.session.commit()
         print("Product Updated.")
 
     elif properties.content_type == "product_deleted":
