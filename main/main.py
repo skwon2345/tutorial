@@ -1,4 +1,6 @@
-from flask import Flask
+from dataclasses import dataclass
+
+from flask import Flask, jsonify
 from flask_cors import CORS
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy import UniqueConstraint
@@ -11,15 +13,19 @@ CORS(app)
 
 db = SQLAlchemy(app)
 
-
+@dataclass # to make Product class json serializable
 class Product(db.Model):
+    id: int
+    title: str
+    image: str
+
     id = db.Column(
         db.Integer, primary_key=True, autoincrement=False
     )  # Product id is created in Django app, so autoincrement is False. It just recieve Product from RabbitMQ.
     title = db.Column(db.String(200))
     image = db.Column(db.String(200))
 
-
+@dataclass # to make ProductUser class json serializable
 class ProductUser(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     user_id = db.Column(db.Integer)
@@ -28,9 +34,9 @@ class ProductUser(db.Model):
     UniqueConstraint("user_id", "product_id", name="user_product_unique")
 
 
-@app.route("/")
+@app.route("/api/products")
 def index():
-    return "Hello"
+    return jsonify(Product.query.all())
 
 
 if __name__ == "__main__":
