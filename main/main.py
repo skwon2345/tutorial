@@ -1,9 +1,12 @@
 from dataclasses import dataclass
 
-from flask import Flask, jsonify
+import requests
+from flask import Flask, abort, jsonify
 from flask_cors import CORS
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy import UniqueConstraint
+
+from producer import publish
 
 app = Flask(__name__)
 app.config[
@@ -36,7 +39,30 @@ class ProductUser(db.Model):
 
 @app.route("/api/products")
 def index():
+    print("Ge")
     return jsonify(Product.query.all())
+
+@app.route("/api/products/<int:id>/like", methods=["POST"])
+def like(id):
+    req = requests.get("http://docker.for.mac.localhost:8000/api/user") # docker.for.mac.localhost refers to local's localhost. if you just write localhost then it refers to docker's localhost.
+    json = req.json()
+
+    try:
+        product_user = ProductUser(user_id=json["id"], product_id=id)
+        db.session.add(product_user)
+        db.session.commit()
+
+        # event
+        publish("product_liked", id)
+
+    except:
+        # exception occurs if same user liked the same product since user_id and product_id is UniqueConstraint for ProductUser tale.
+        abort(400, "Your already liked this product.")
+
+
+    return jsonify({"message": "success"})
+
+
 
 
 if __name__ == "__main__":
