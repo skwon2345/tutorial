@@ -21,12 +21,11 @@ def callback(ch, method, properties, body):
 
     if properties.content_type == "product_created":
         product = Product(id=data["id"], title=data["title"], image=data["image"])
-        
-         # create an object using SQLAlchemy
+
+        # create an object using SQLAlchemy
         db.session.add(product)
         db.session.commit()
         print("Product Created.")
-
 
     elif properties.content_type == "product_updated":
         product = Product.query.get(data["id"])
@@ -42,7 +41,6 @@ def callback(ch, method, properties, body):
         db.session.delete(product)
         db.session.commit()
         print("Product Deleted.")
-
 
 
 channel.basic_consume(queue="main", on_message_callback=callback, auto_ack=True)
