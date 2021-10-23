@@ -16,7 +16,8 @@ CORS(app)
 
 db = SQLAlchemy(app)
 
-@dataclass # to make Product class json serializable
+
+@dataclass  # to make Product class json serializable
 class Product(db.Model):
     id: int
     title: str
@@ -28,7 +29,8 @@ class Product(db.Model):
     title = db.Column(db.String(200))
     image = db.Column(db.String(200))
 
-@dataclass # to make ProductUser class json serializable
+
+@dataclass  # to make ProductUser class json serializable
 class ProductUser(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     user_id = db.Column(db.Integer)
@@ -42,9 +44,12 @@ def index():
     print("Ge")
     return jsonify(Product.query.all())
 
+
 @app.route("/api/products/<int:id>/like", methods=["POST"])
 def like(id):
-    req = requests.get("http://docker.for.mac.localhost:8000/api/user") # docker.for.mac.localhost refers to local's localhost. if you just write localhost then it refers to docker's localhost.
+    req = requests.get(
+        "http://docker.for.mac.localhost:8000/api/user"
+    )  # docker.for.mac.localhost refers to local's localhost. if you just write localhost then it refers to docker's localhost.
     json = req.json()
 
     try:
@@ -59,10 +64,7 @@ def like(id):
         # exception occurs if same user liked the same product since user_id and product_id is UniqueConstraint for ProductUser tale.
         abort(400, "Your already liked this product.")
 
-
     return jsonify({"message": "success"})
-
-
 
 
 if __name__ == "__main__":
